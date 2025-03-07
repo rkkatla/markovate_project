@@ -6,8 +6,6 @@ from dotenv import load_dotenv
 import os
 
 
-# Initialize Gemini API client using your API key
-
 def generate_html_from_prompt(client,prompt: str, image) -> str:
     """
     Sends the provided prompt and image to the Gemini API to generate a complete HTML dashboard.
@@ -65,7 +63,9 @@ def main(client,image_path,prompt_path,output_html_path):
 
 if __name__ == "__main__":
     try:
-        load_dotenv()  # This automatically reads .env
+        
+        # Initialize Gemini API client using your API key
+        load_dotenv()  
         GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
         client=genai.Client(api_key=GEMINI_API_KEY)
         
