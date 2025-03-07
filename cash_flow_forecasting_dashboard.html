@@ -1,0 +1,512 @@
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cash Flow Forecasting Dashboard</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        .dashboard-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background-color: #f0f4f8;
+        }
+
+        .chart-card {
+            border-radius: 10px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            padding: 0.5rem;
+            /* Reduced padding */
+            height: 250px;
+            /* Reduced height */
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            background-color: white;
+        }
+
+        .chart-title {
+            font-size: 0.9rem;
+            /* Reduced font size */
+            font-weight: 600;
+            margin-bottom: 0.3rem;
+            /* Reduced margin */
+            text-align: center;
+        }
+
+        .chart-container {
+            flex: 1;
+            position: relative;
+            margin: 0.2rem;
+        }
+
+        .metric-box {
+            text-align: center;
+            padding: 0.5rem;
+            /* Reduced padding */
+            border-radius: 5px;
+            font-size: 0.7rem;
+            /* Reduced font size */
+        }
+
+        .metric-box h3 {
+            font-size: 0.8rem;
+            /* Reduced font size */
+            font-weight: 600;
+            margin-bottom: 0.2rem;
+            /* Reduced margin */
+        }
+
+        .metric-box p {
+            font-size: 0.7rem;
+            /* Reduced font size */
+            margin-bottom: 0.1rem;
+            /* Reduced margin */
+        }
+
+        .legend-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            text-align: center;
+        }
+
+        .legend-item {
+            display: inline-block;
+            margin: 0 0.3rem;
+            font-size: 0.6rem;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="dashboard-container">
+        <div class="w-[min(100%,1200px)]">
+            <h1 class="text-xl font-bold mb-2 text-center">Cash Flow Forecasting Dashboard</h1>
+            <div class="grid grid-cols-3 gap-2">
+
+                <!-- Cash Flow Trend -->
+                <div class="chart-card col-span-1">
+                    <h2 class="chart-title">Cash Flow Trend (Operating, Investing, Financing) - Last 7 Years &
+                        Forecast</h2>
+                    <div class="chart-container">
+                        <canvas id="cashFlowTrendChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- Key Cash Flow Indicators -->
+                <div class="chart-card col-span-1">
+                    <h2 class="chart-title">Key Cash Flow Indicators - Current vs Predicted</h2>
+                    <div class="grid grid-cols-3 gap-1 text-center">
+                        <div class="metric-box">
+                            <h3 class="font-semibold">Operating Cash Flow</h3>
+                            <p>$7.5M</p>
+                            <p class="text-green-500">$8.2M</p>
+                            <p class="text-xs">Pred</p>
+                        </div>
+                        <div class="metric-box">
+                            <h3 class="font-semibold">Investing Cash Flow</h3>
+                            <p>-$2.1M</p>
+                            <p class="text-red-500">-$2.5M</p>
+                            <p class="text-xs">Pred</p>
+                        </div>
+                        <div class="metric-box">
+                            <h3 class="font-semibold">Financing Cash Flow</h3>
+                            <p>$0.8M</p>
+                            <p class="text-green-500">$1.0M</p>
+                            <p class="text-xs">Pred</p>
+                        </div>
+                        <div class="metric-box">
+                            <h3 class="font-semibold">Free Cash Flow</h3>
+                            <p>$5.4M</p>
+                            <p class="text-green-500">$5.7M</p>
+                            <p class="text-xs">Pred</p>
+                        </div>
+                        <div class="metric-box">
+                            <h3 class="font-semibold">Cash Balance (End of Period)</h3>
+                            <p>$25.3M</p>
+                            <p class="text-green-500">$26.8M</p>
+                            <p class="text-xs">Pred</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Cash Flow Components -->
+                <div class="chart-card col-span-1">
+                    <h2 class="chart-title">Cash Flow Components - Breakdown (Next Year Forecast)</h2>
+                    <div class="chart-container">
+                        <canvas id="cashFlowComponentsChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- Cumulative Cash Balance Forecast -->
+                <div class="chart-card col-span-1">
+                    <h2 class="chart-title">Cumulative Cash Balance Forecast - Next 7 Years</h2>
+                    <div class="chart-container">
+                        <canvas id="cumulativeBalanceChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- Cash Flow Forecast vs Budget -->
+                <div class="chart-card col-span-1">
+                    <h2 class="chart-title">Cash Flow Forecast vs. Budget - Next Year</h2>
+                    <div class="chart-container">
+                        <canvas id="forecastVsBudgetChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- Cash Flow Drivers Analysis -->
+                <div class="chart-card col-span-1">
+                    <h2 class="chart-title">Cash Flow Drivers Analysis - Year over Year Change Impact</h2>
+                    <div class="chart-container">
+                        <canvas id="driversAnalysisChart"></canvas>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Cash Flow Trend Chart
+        const cashFlowTrendCtx = document.getElementById('cashFlowTrendChart').getContext('2d');
+        const cashFlowTrendChart = new Chart(cashFlowTrendCtx, {
+            type: 'line',
+            data: {
+                labels: ['2018', '2019', '2020', '2021', '2022', '2023', '2024', '2025 (Pred)'],
+                datasets: [{
+                    label: 'Operating Cash Flow',
+                    data: [6.5, 7, 7.2, 7.5, 7.8, 8, 8.2, 8.5],
+                    borderColor: '#20c997',
+                    borderWidth: 2,
+                    fill: false
+                }, {
+                    label: 'Investing Cash Flow',
+                    data: [-1, -1.2, -1.5, -1.3, -1.1, -0.9, -0.8, -0.7],
+                    borderColor: '#3b82f6',
+                    borderWidth: 2,
+                    fill: false
+                }, {
+                    label: 'Financing Cash Flow',
+                    data: [1.5, 1.6, 1.7, 1.8, 1.9, 2, 2.1, 2.2],
+                    borderColor: '#f472b6',
+                    borderWidth: 2,
+                    fill: false
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        title: {
+                            display: false,
+                            text: 'Cash Flow (Millions USD)'
+                        },
+                        ticks: {
+                            font: {
+                                size: 8
+                            }
+                        }
+                    },
+                    x: {
+                        title: {
+                            display: false,
+                            text: 'Year'
+                        },
+                        ticks: {
+                            font: {
+                                size: 8
+                            }
+                        }
+                    }
+                },
+                plugins: {
+                    tooltip: {
+                        mode: 'index',
+                        intersect: false,
+                        titleFont: {
+                            size: 10
+                        },
+                        bodyFont: {
+                            size: 10
+                        }
+                    },
+                    legend: {
+                        display: true,
+                        position: 'top',
+                        align: 'center',
+                        labels: {
+                            font: {
+                                size: 8
+                            }
+                        }
+                    }
+                }
+            }
+        });
+
+        // Cash Flow Components Chart
+        const cashFlowComponentsCtx = document.getElementById('cashFlowComponentsChart').getContext('2d');
+        const cashFlowComponentsChart = new Chart(cashFlowComponentsCtx, {
+            type: 'bar',
+            data: {
+                labels: ['Cash Inflows', 'Cash Outflows'],
+                datasets: [{
+                    label: 'Sales Revenue',
+                    data: [55, 0],
+                    backgroundColor: '#86efac'
+                }, {
+                    label: 'Cost of Goods Sold',
+                    data: [0, 35],
+                    backgroundColor: '#f87171'
+                }, {
+                    label: 'Operating Expenses',
+                    data: [0, 5],
+                    backgroundColor: '#facc15'
+                }, {
+                    label: 'Capital Expenditures',
+                    data: [0, 2],
+                    backgroundColor: '#60a5fa'
+                }, {
+                    label: 'Debt Financing',
+                    data: [5, 0],
+                    backgroundColor: '#ab5cf2'
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    x: {
+                        stacked: true,
+                        ticks: {
+                            font: {
+                                size: 8
+                            }
+                        }
+                    },
+                    y: {
+                        stacked: true,
+                        title: {
+                            display: false,
+                            text: 'Cash Flow (Millions USD)'
+                        },
+                        ticks: {
+                            font: {
+                                size: 8
+                            }
+                        }
+                    }
+                },
+                plugins: {
+                    tooltip: {
+                        mode: 'index',
+                        intersect: false,
+                        titleFont: {
+                            size: 10
+                        },
+                        bodyFont: {
+                            size: 10
+                        }
+                    },
+                    legend: {
+                        display: true,
+                        position: 'top',
+                        align: 'center',
+                        labels: {
+                            font: {
+                                size: 8
+                            }
+                        }
+                    }
+                }
+            }
+        });
+
+        // Cumulative Balance Chart
+        const cumulativeBalanceCtx = document.getElementById('cumulativeBalanceChart').getContext('2d');
+        const cumulativeBalanceChart = new Chart(cumulativeBalanceCtx, {
+            type: 'line',
+            data: {
+                labels: ['2018', '2019', '2020', '2021', '2022', '2023', '2024', '2025 (Pred)'],
+                datasets: [{
+                    label: 'Cumulative Cash Balance',
+                    data: [21, 23, 24, 26, 27, 28, 29, 30],
+                    borderColor: '#20c997',
+                    borderWidth: 2,
+                    fill: true,
+                    backgroundColor: 'rgba(32, 201, 151, 0.2)'
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        title: {
+                            display: false,
+                            text: 'Cash Balance (Millions USD)'
+                        },
+                        ticks: {
+                            font: {
+                                size: 8
+                            }
+                        }
+                    },
+                    x: {
+                        title: {
+                            display: false,
+                            text: 'Year'
+                        },
+                        ticks: {
+                            font: {
+                                size: 8
+                            }
+                        }
+                    }
+                },
+                plugins: {
+                    tooltip: {
+                        mode: 'index',
+                        intersect: false,
+                        titleFont: {
+                            size: 10
+                        },
+                        bodyFont: {
+                            size: 10
+                        }
+                    },
+                    legend: {
+                        display: false
+                    }
+                }
+            }
+        });
+
+        // Forecast vs Budget Chart
+        const forecastVsBudgetCtx = document.getElementById('forecastVsBudgetChart').getContext('2d');
+        const forecastVsBudgetChart = new Chart(forecastVsBudgetCtx, {
+            type: 'bar',
+            data: {
+                labels: ['Next Year'],
+                datasets: [{
+                    label: 'Forecasted Cash Flow',
+                    data: [5.5],
+                    backgroundColor: '#20c997'
+                }, {
+                    label: 'Budgeted Cash Flow',
+                    data: [6],
+                    backgroundColor: '#90EE90'
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        title: {
+                            display: false,
+                            text: 'Cash Flow (Millions USD)'
+                        },
+                        ticks: {
+                            font: {
+                                size: 8
+                            }
+                        }
+                    }
+                },
+                plugins: {
+                    tooltip: {
+                        mode: 'index',
+                        intersect: false,
+                        titleFont: {
+                            size: 10
+                        },
+                        bodyFont: {
+                            size: 10
+                        }
+                    },
+                    legend: {
+                        display: true,
+                        position: 'top',
+                        align: 'center',
+                        labels: {
+                            font: {
+                                size: 8
+                            }
+                        }
+                    }
+                }
+            }
+        });
+
+        // Drivers Analysis Chart
+        const driversAnalysisCtx = document.getElementById('driversAnalysisChart').getContext('2d');
+        const driversAnalysisChart = new Chart(driversAnalysisCtx, {
+            type: 'bar',
+            data: {
+                labels: ['YoY Change'],
+                datasets: [{
+                    label: 'Cash Flow Impact',
+                    data: [-0.4],
+                    backgroundColor: '#facc15'
+                },{
+                    label: 'Cash Flow Impact',
+                    data: [0.5],
+                    backgroundColor: '#20c997'
+                },{
+                    label: 'Cash Flow Impact',
+                    data: [-0.2],
+                    backgroundColor: '#20c997'
+                }, {
+                    label: 'Cash Flow Impact',
+                    data: [1.2],
+                    backgroundColor: '#20c997'
+                }]
+            },
+            options: {
+                indexAxis: 'y',
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    x: {
+                        title: {
+                            display: false,
+                            text: 'Cash Flow Impact (Millions USD)'
+                        },
+                        ticks: {
+                            font: {
+                                size: 8
+                            }
+                        }
+                    }
+                },
+                plugins: {
+                    tooltip: {
+                        mode: 'index',
+                        intersect: false,
+                        titleFont: {
+                            size: 10
+                        },
+                        bodyFont: {
+                            size: 10
+                        }
+                    },
+                    legend: {
+                        display: false
+                    }
+                }
+            }
+        });
+    </script>
+</body>
+
+</html>
+```

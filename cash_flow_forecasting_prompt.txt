@@ -1,0 +1,37 @@
+Create a fully interactive and highly responsive HTML dashboard for Cash Flow Forecasting Dashboard using HTML, CSS (tailwindcss), and Chart.js. 
+
+Dashboard Layout and Sections (Exact Six Sections):
+1 Cash Flow Trend (Operating, Investing, Financing) - Last 1 Years & Forecast: Line Chart
+2 Key Cash Flow Indicators - Current vs Predicted: KPI/Scorecard Tiles (not a traditional chart)
+3 Cash Flow Components - Breakdown Over Time: Stacked Bar Chart
+4 Cumulative Cash Balance Forecast - Next 1 Year: Line Chart
+5 Cash Flow Forecast vs. Budget - Next Year: Grouped Bar (Column) Chart
+6 Cash Flow Drivers Analysis - Year over Year Change Impact: Bar (Column) Chart
+
+Interactive Features:
+- All charts must support interactive hover tooltips.
+- Implement legend-based dataset toggling on applicable charts, allowing users to click a legend item to hide/show a dataset.
+- Add on-click interactions: when a data point is clicked, display additional details (e.g., log details to the console or update a designated details section on the dashboard).
+- Use smooth animated transitions for chart updates and data changes.
+
+Styling and Structure:
+- All grid items must maintain the same aspect ratio and pixel size, with content filling each grid.
+- Use the Tailwind CSS grid system for layout with classes: w-[min(100%,1180px)], grid, grid-cols-3, col-span-1, gap-2, flex, items-center, justify-center, bg-white, and a 3x4 ratio.
+- Wrap the entire dashboard in a container with the class "dashboard-container".
+- Place each chart/section in a card with the class "chart-card".
+- For the metrics section, use a flex container with the class "metrics" and individual boxes with the class "metric-box".
+- Include custom CSS for .dashboard-container, .chart-card, .metrics, and .metric-box in an internal <style> tag.
+- Ensure all chart cards are uniformly sized and aligned, using consistent Tailwind CSS classes and fixed height if necessary.
+- Center the grid layout and ensure responsiveness so charts fit their containers without overflowing.
+- The UI should match the provided image exactly.
+
+Data:
+- Use sample data for all charts and metrics.
+- Structure the code so that data points can be easily updated.
+
+Technical Constraints:
+- The final output must be a complete HTML file with no extra text or explanations outside the <html> tags.
+- Reference the Tailwindcss and Chart.js CDNs appropriately.
+- Ensure the code is modular, well-commented, and easily readable.
+
+Output only pure HTML code that fulfills all of the above requirements.

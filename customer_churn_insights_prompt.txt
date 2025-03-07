@@ -1,0 +1,37 @@
+Create a fully interactive and highly responsive HTML dashboard for Customer Churn Insights using HTML, Tailwind CSS, and Chart.js.
+
+Dashboard Layout and Sections (exactly six sections):
+1. Predicted Churn Rate Trend – Line Chart.
+2. Key Churn Metrics (Metric Summary Cards) – displayed in a top-center section using a flex layout.
+3. Churn Rate by Customer Segment – Bar Chart.
+4. Churn Probability Distribution – Histogram with proper binning.
+5. Churn Reason Breakdown – Pie Chart.
+6. Impact of Retention Efforts – Line Chart.
+
+Interactive Features:
+- Interactive hover tooltips on all charts.
+- Legend-based dataset toggling for applicable charts.
+- On-click interactions: display additional details (e.g., log details or update a details section).
+- Smooth animated transitions for chart updates.
+
+Styling and Structure:
+- All grid items must maintain the same aspect ratio and pixel size, with content filling each grid.
+- Use the Tailwind CSS grid system for layout with classes: w-[min(100%,1180px)], grid, grid-cols-3, col-span-1, gap-2, flex, items-center, justify-center, bg-white, and a 3x4 ratio.
+- Wrap the entire dashboard in a container with the class "dashboard-container".
+- Place each chart/section in a card with the class "chart-card".
+- For the metrics section, use a flex container with the class "metrics" and individual boxes with the class "metric-box".
+- Include custom CSS for .dashboard-container, .chart-card, .metrics, and .metric-box in an internal <style> tag.
+- Ensure all chart cards are uniformly sized and aligned, using consistent Tailwind CSS classes and fixed height if necessary.
+- Center the grid layout and ensure responsiveness so charts fit their containers without overflowing.
+- The UI should match the provided image exactly.
+
+Data:
+- Use sample data for all charts and metrics.
+- Structure code to allow easy updates to data points.
+
+Technical Constraints:
+- The final output must be a complete HTML file (with DOCTYPE, <html>, <head>, and <body> tags) and no extra text outside the HTML tags.
+- Reference the Tailwind CSS and Chart.js CDNs appropriately.
+- Ensure the code is modular, well-commented, and easily readable.
+
+Output only pure HTML code that fulfills all the above requirements.
